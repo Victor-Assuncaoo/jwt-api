@@ -1,19 +1,25 @@
 const authService = require("./auth.service");
 
 const authMiddleware = async (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+verifyToken: async (req, res, next) => {
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = await authService.verifyToken(token);
+            req.user = decoded;
+            next();
+        } catch (error) {
+            res.status(401).json({ error: error.message });
+        }
+    };
 
-    if (!token) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
+    verifyAdmin: (req, res, next) => {
+        if (req.user && req.user.role === 'admin') {
+            next();
+        } else {
+            res.status(403).json({ error: 'Access denied' });
+        }
     }
-
-    try {
-        const decoded = await authService.verifyToken(token);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(400).json({ error: 'Invalid token.' });
-    }
+    
 };
 
 module.exports = authMiddleware;
