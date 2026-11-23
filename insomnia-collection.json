@@ -1,0 +1,192 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-11-23T19:57:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_biblioteca",
+      "_type": "workspace",
+      "name": "Biblioteca JWT API",
+      "description": "Coleção completa de endpoints do Trabalho Integrador de Biblioteca"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_biblioteca",
+      "name": "Base Environment",
+      "data": {
+        "baseUrl": "http://localhost:3000/v1",
+        "accessToken": "",
+        "refreshToken": ""
+      }
+    },
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "1. Auth - Login",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/auth/login",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@biblioteca.com\",\n  \"password\": \"123456\"\n}"
+      },
+      "headers": [{ "name": "Content-Type", "value": "application/json" }]
+    },
+    {
+      "_id": "req_refresh",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "2. Auth - Refresh Token",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/auth/refresh",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refreshToken\": \"{{ _.refreshToken }}\"\n}"
+      },
+      "headers": [{ "name": "Content-Type", "value": "application/json" }]
+    },
+    {
+      "_id": "req_me",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "3. Auth - Perfil Logado (/me)",
+      "method": "GET",
+      "url": "{{ _.baseUrl }}/auth/me",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }]
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "4. Auth - Logout",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/auth/logout",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refreshToken\": \"{{ _.refreshToken }}\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_dashboard",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "5. Relatórios - Dashboard",
+      "method": "GET",
+      "url": "{{ _.baseUrl }}/reports/dashboard",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }]
+    },
+    {
+      "_id": "req_categories_list",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "6. Categorias - Listar",
+      "method": "GET",
+      "url": "{{ _.baseUrl }}/categories",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }]
+    },
+    {
+      "_id": "req_categories_create",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "7. Categorias - Criar (Admin)",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/categories",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Ficção Científica\",\n  \"description\": \"Obras de ficção científica e futurismo\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_authors_create",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "8. Autores - Criar (Admin)",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/authors",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Isaac Asimov\",\n  \"nationality\": \"Russo-Americano\",\n  \"birthDate\": \"1920-01-02\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_books_create",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "9. Livros - Criar (Admin)",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/books",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Fundação\",\n  \"isbn\": \"978-8576570660\",\n  \"year\": 1951,\n  \"totalCopies\": 3,\n  \"availableCopies\": 3,\n  \"CategoryId\": 1,\n  \"authorIds\": [1]\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_books_filter",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "10. Livros - Buscar com Filtros",
+      "method": "GET",
+      "url": "{{ _.baseUrl }}/books?title=Fundação&available=true",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }]
+    },
+    {
+      "_id": "req_readers_create",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "11. Leitores - Criar",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/readers",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Carlos Silva\",\n  \"cpf\": \"123.456.789-00\",\n  \"email\": \"carlos@email.com\",\n  \"phone\": \"(44) 99999-8888\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_loans_create",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "12. Empréstimos - Realizar",
+      "method": "POST",
+      "url": "{{ _.baseUrl }}/loans",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"bookId\": 1,\n  \"readerId\": 1\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }
+      ]
+    },
+    {
+      "_id": "req_loans_return",
+      "_type": "request",
+      "parentId": "wrk_biblioteca",
+      "name": "13. Empréstimos - Registrar Devolução",
+      "method": "PATCH",
+      "url": "{{ _.baseUrl }}/loans/1/return",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.accessToken }}" }]
+    }
+  ]
+}

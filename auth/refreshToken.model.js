@@ -1,16 +1,16 @@
 const db = require('../config/db');
 const { DataTypes } = require('sequelize');
 
-const refreshToken = db.define('RefreshToken', {
+const RefreshToken = db.define('RefreshToken', {
     token: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
         allowNull: false,
     },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    expiredAt: {
+    expiresAt: {
         type: DataTypes.DATE,
         allowNull: false,
     },
@@ -21,4 +21,4 @@ const refreshToken = db.define('RefreshToken', {
     },
 });
 
-module.exports = refreshToken;
+module.exports = RefreshToken;

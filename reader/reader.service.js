@@ -1,49 +1,40 @@
-const { Op } = require('sequelize');
-const {Reader, Loan, Book } = require('./user.model');
-
+const Reader = require('./reader.model');
+const Loan = require('../loan/loan.model');
+const Book = require('../book/book.model');
 
 const readerService = {
-    create: async (readerData) => {
-        try {
-            readerData.password = await bcrypt.hash(readerData.password, 10);
-            return await Reader.create(readerData);
-        } catch (error) {
-            throw new Error('Error creating reader: ' + error.message);
+    create: async (data) => {
+        const existing = await Reader.findOne({ where: { cpf: data.cpf } });
+        if (existing) {
+            const err = new Error('CPF já cadastrado');
+            err.status = 409;
+            throw err;
         }
+        return await Reader.create(data);
     },
-    update: async (id, readerData) => {
-        try {
-            const reader = await Reader.findByPk(id);
-            if (!reader) {
-                throw new Error('Reader not found');
-            }
-            await reader.update(readerData);
-            return reader;
-        } catch (error) {
-            throw new Error('Error updating reader: ' + error.message);
-        }
-    },
-    findById: async (id) => {
-        return await Reader.findByPk(id);
-    },
-    findByEmail: async (email) => {
-        return await Reader.findOne({ where: { email } });
-    },
+
     findAll: async () => {
         return await Reader.findAll();
     },
-    delete: async (id) => {
-        try {
-            const reader = await Reader.findByPk(id);
-            if (!reader) {
-                throw new Error('Reader not found');
-            }
-            await reader.destroy();
-        } catch (error) {
-            throw new Error('Error deleting reader: ' + error.message);
-        }
-}
 
+    findById: async (id) => {
+        return await Reader.findByPk(id);
+    },
+
+    update: async (id, data) => {
+        const reader = await Reader.findByPk(id);
+        if (!reader) throw new Error('Leitor não encontrado');
+        await reader.update(data);
+        return reader;
+    },
+
+    getLoanHistory: async (readerId) => {
+        return await Loan.findAll({
+            where: { readerId },
+            include: [{ model: Book, attributes: ['id', 'title', 'isbn'] }],
+            order: [['createdAt', 'DESC']],
+        });
+    },
 };
 
 module.exports = readerService;

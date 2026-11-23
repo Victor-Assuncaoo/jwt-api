@@ -1,43 +1,43 @@
-const { Op } = require('sequelize');
-const { Category } = require('./category.model');
+const Category = require('./category.model');
+const Book = require('../book/book.model');
 
 const categoryService = {
-    create: async (categoryData) => {
-        try {
-            return await Category.create(categoryData);
-        } catch (error) {
-            throw new Error('Error creating category: ' + error.message);
+    create: async (data) => {
+        const existing = await Category.findOne({ where: { name: data.name } });
+        if (existing) {
+            const err = new Error('Categoria já existe com esse nome');
+            err.status = 409;
+            throw err;
         }
+        return await Category.create(data);
     },
-    update: async (id, categoryData) => {
-        try {
-            const category = await Category.findByPk(id);
-            if (!category) {
-                throw new Error('Category not found');
-            }
-            await category.update(categoryData);
-            return category;
-        } catch (error) {
-            throw new Error('Error updating category: ' + error.message);
-        }
-    },
-    findById: async (id) => {
-        return await Category.findByPk(id);
-    },
+
     findAll: async () => {
         return await Category.findAll();
     },
+
+    findById: async (id) => {
+        return await Category.findByPk(id);
+    },
+
+    update: async (id, data) => {
+        const category = await Category.findByPk(id);
+        if (!category) throw new Error('Categoria não encontrada');
+        await category.update(data);
+        return category;
+    },
+
     delete: async (id) => {
-        try {
-            const category = await Category.findByPk(id);
-            if (!category) {
-                throw new Error('Category not found');
-            }
-            await category.destroy();
-        } catch (error) {
-            throw new Error('Error deleting category: ' + error.message);
+        const category = await Category.findByPk(id);
+        if (!category) throw new Error('Categoria não encontrada');
+        const bookCount = await Book.count({ where: { CategoryId: id } });
+        if (bookCount > 0) {
+            const err = new Error('Não é possível excluir categoria com livros vinculados');
+            err.status = 409;
+            throw err;
         }
-    }
+        await category.destroy();
+    },
 };
 
 module.exports = categoryService;

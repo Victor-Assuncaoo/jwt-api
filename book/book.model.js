@@ -1,6 +1,7 @@
 const db = require('../config/db');
 const { DataTypes } = require('sequelize');
-const book = db.define('book', {
+
+const Book = db.define('Book', {
     title: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -8,6 +9,7 @@ const book = db.define('book', {
     isbn: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     year: {
         type: DataTypes.INTEGER,
@@ -16,11 +18,13 @@ const book = db.define('book', {
     totalCopies: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
     },
     availableCopies: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
     },
 });
 
-module.exports = book;
+module.exports = Book;

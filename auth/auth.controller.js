@@ -7,17 +7,18 @@ const authController = {
             const result = await authService.login(email, password);
             res.json(result);
         } catch (error) {
-            res.status(401).json({ error: error.message });
+            res.status(401).json({ error: error.message, message: error.message });
         }
     },
 
-    async refreshToken(req, res) {
+    async refresh(req, res) {
         try {
             const { refreshToken } = req.body;
-            const tokens = await authService.refreshToken(refreshToken);
+            if (!refreshToken) return res.status(400).json({ error: 'refreshToken é obrigatório' });
+            const tokens = await authService.refresh(refreshToken);
             res.json(tokens);
         } catch (error) {
-            res.status(401).json({ error: error.message });
+            res.status(401).json({ error: error.message, message: error.message });
         }
     },
 
@@ -32,14 +33,13 @@ const authController = {
 
     async logout(req, res) {
         try {
-            const token = req.headers.authorization.split(' ')[1];
             const { refreshToken } = req.body;
-            await authService.logout(refreshToken, token);
+            await authService.logout(refreshToken);
             res.json({ message: 'Logout successful' });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
-    }
+    },
 };
 
 module.exports = authController;

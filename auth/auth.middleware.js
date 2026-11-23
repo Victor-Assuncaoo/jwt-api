@@ -1,25 +1,26 @@
-const authService = require("./auth.service");
+const authService = require('./auth.service');
 
-const authMiddleware = async (req, res, next) => {
-verifyToken: async (req, res, next) => {
-        try {
-            const token = req.headers.authorization.split(' ')[1];
-            const decoded = await authService.verifyToken(token);
-            req.user = decoded;
-            next();
-        } catch (error) {
-            res.status(401).json({ error: error.message });
+const verifyToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Token não fornecido' });
         }
-    };
-
-    verifyAdmin: (req, res, next) => {
-        if (req.user && req.user.role === 'admin') {
-            next();
-        } else {
-            res.status(403).json({ error: 'Access denied' });
-        }
+        const token = authHeader.split(' ')[1];
+        const decoded = await authService.verifyToken(token);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).json({ error: 'Token inválido ou expirado' });
     }
-    
 };
 
-module.exports = authMiddleware;
+const verifyAdmin = (req, res, next) => {
+    if (req.user && req.user.isAdmin === true) {
+        next();
+    } else {
+        return res.status(403).json({ error: 'Acesso negado: somente administradores' });
+    }
+};
+
+module.exports = { verifyToken, verifyAdmin };

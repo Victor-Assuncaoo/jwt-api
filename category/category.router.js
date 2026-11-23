@@ -1,13 +1,12 @@
-const express = require('express');
-const router = express.Router();
+const { Router } = require('express');
+const router = Router();
 const categoryController = require('./category.controller');
-const authMiddleware = require('../auth/auth.middleware');
+const { verifyToken, verifyAdmin } = require('../auth/auth.middleware');
 
-// Mapeamento das rotas (leitura: logado | escrita: somente admin)
-router.post('/', authMiddleware.verifyToken, authMiddleware.verifyAdmin, categoryController.create);
-router.get('/', authMiddleware.verifyToken, categoryController.findAll);
-router.get('/:id', authMiddleware.verifyToken, categoryController.findById);
-router.put('/:id', authMiddleware.verifyToken, authMiddleware.verifyAdmin, categoryController.update);
-router.delete('/:id', authMiddleware.verifyToken, authMiddleware.verifyAdmin, categoryController.delete);
+router.get('/', verifyToken, categoryController.findAll);
+router.get('/:id', verifyToken, categoryController.findById);
+router.post('/', verifyToken, verifyAdmin, categoryController.create);
+router.put('/:id', verifyToken, verifyAdmin, categoryController.update);
+router.delete('/:id', verifyToken, verifyAdmin, categoryController.delete);
 
 module.exports = router;

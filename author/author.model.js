@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { DataTypes } = require('sequelize');
+
 const Author = db.define('Author', {
     name: {
         type: DataTypes.STRING,
@@ -7,11 +8,11 @@ const Author = db.define('Author', {
     },
     nationality: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
-    birthdate: {
-        type: DataTypes.DATE,
-        allowNull: false,
+    birthDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
     },
 });
 
